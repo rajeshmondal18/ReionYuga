@@ -61,23 +61,16 @@ float ***nh, // stores neutral hydrogen on grid points
   ***ngammas, // stores smoothed photon number on grid points
   ***nxion;  // stores ionization fractions for different nions on grid points
 
-fftwf_plan p_nhs; // for FFT
-fftwf_plan q_nhs; // for FFT
-
-fftwf_plan p_ngammas; // for FFT
-fftwf_plan q_ngammas; // for FFT
-
 /*----------------------------GLOBAL VARIABLES DONE----------------------------*/
 
 
-
-main()
+void main()
 {
   long int seed;
   FILE  *inp,*outpp;
   
   int i;
-  long ii,jj, kk,ll;
+  long ii,jj, kk,ll, tmp;
   int sfac;
   
   float vaa;  // final scale factor
@@ -115,12 +108,12 @@ main()
   /*---------------------------------------------------------------------------*/
   
   inp=fopen("input.nbody_comp","r");
-  fscanf(inp,"%*ld%*d");
+  fscanf(inp,"%ld%*d",&tmp);
   fscanf(inp,"%*f%*f%*f%*f");
   fscanf(inp,"%*f%*f");
-  fscanf(inp,"%*ld%*ld%*ld%*ld%*f");
-  fscanf(inp,"%*f%*d%*d%*d");
-  fscanf(inp,"%*f");  /* time step, final scale factor*/
+  fscanf(inp,"%ld%ld%ld%*d%*f",&tmp,&tmp,&tmp);
+  fscanf(inp,"%*d%*d");
+  fscanf(inp,"%*f%*f");  /* time step, final scale factor*/
   fscanf(inp,"%d",&Noutput);
   
   nz=(float*)calloc(Noutput,sizeof(float)); // array to store Noutput 
@@ -136,12 +129,20 @@ main()
   //---------------------------------------------------------------------------//
   //-------------parameters read from input file. Check this ------------------//
   
-  sfac=8;
+  sfac=2;
   Nbin=10;
   nion=23.21;
   
   vion=0.0;
   roion=0.0;
+
+  //calculating max and min radius for smoothing in units of grid size
+      
+  r_min=1.;
+  r_max=20.0/LL; // Mpc/LL in grid unit
+
+  //r_max=pow((1.*N1*N2*N3),(1./3.))/2.;
+      
   
   //---------------------------------------------------------------------------//
   
@@ -283,13 +284,6 @@ main()
       /*----------------------------------------------------------------*/
       /*----------------------------------------------------------------*/
       
-      //calculating max and min radius for smoothing in units of grid size
-      
-      r_min=1.;
-      r_max=20.0/LL; // Mpc/LL in grid unit
-
-      //r_max=pow((1.*N1*N2*N3),(1./3.))/2.;
-      
       /*----------------------------------------------------------------*/
       /*                        smoothing                               */
       /*----------------------------------------------------------------*/
@@ -309,8 +303,10 @@ main()
 		}
 	  //printf("starting smoothing for radius of size %e\n",Radii);
 	  
-	  smooth(nhs, &p_nhs, &q_nhs, Radii);
-	  smooth(ngammas, &p_ngammas, &q_ngammas, Radii);
+	  smooth(nhs,Radii);
+	  
+	  smooth(ngammas,Radii);
+	  
 	  
 	  for(ii=0;ii<N1;ii++)
 	    for(jj=0;jj<N2;jj++)

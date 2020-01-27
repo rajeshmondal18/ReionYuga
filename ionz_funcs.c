@@ -44,12 +44,6 @@ extern fftwf_plan q_ro; // for FFT
 
 extern float ***nh,***nhs,***ngamma,***ngammas,***nxion;
 
-extern fftwf_plan p_nhs; // for FFT
-extern fftwf_plan q_nhs; // for FFT
-
-extern fftwf_plan p_ngammas; // for FFT
-extern fftwf_plan q_ngammas; // for FFT
-
 
 static float ***rosp; // sphere for smoothing
 static fftwf_plan p_rosp; // for FFT
@@ -87,13 +81,8 @@ void Setting_Up_Memory_For_ionz()
   
   /*---------Creating the plans for forward FFT's--------------------*/
   
-  p_rosp = fftwf_plan_dft_r2c_3d(N1, N2, N3, &(rosp[0][0][0]), (fftwf_complex*)&(rosp[0][0][0]), FFTW_ESTIMATE); 
-
-  p_nhs=fftwf_plan_dft_r2c_3d(N1, N2, N3, &(nhs[0][0][0]), (fftwf_complex*)&(nhs[0][0][0]),FFTW_ESTIMATE);
-  q_nhs=fftwf_plan_dft_c2r_3d(N1, N2, N3, (fftwf_complex*)&(nhs[0][0][0]), &(nhs[0][0][0]), FFTW_ESTIMATE);
- 
-  p_ngammas=fftwf_plan_dft_r2c_3d(N1, N2, N3, &(ngammas[0][0][0]), (fftwf_complex*)&(ngammas[0][0][0]),FFTW_ESTIMATE);
-  q_ngammas=fftwf_plan_dft_c2r_3d(N1, N2, N3, (fftwf_complex*)&(ngammas[0][0][0]), &(ngammas[0][0][0]), FFTW_ESTIMATE); 
+  p_rosp = fftwf_plan_dft_r2c_3d(N1, N2, N3, &(rosp[0][0][0]), (fftwf_complex*)&(rosp[0][0][0]), FFTW_ESTIMATE);  
+  
 }
 
 //*************************************************************************
@@ -684,7 +673,7 @@ void calpow_mom_k(float ***ro_dum,int Nbin,float kmin,float kmax,double* power, 
 
 //*************************************************************************
 
-void smooth(float ***ro_dum, fftwf_plan *p_dum, fftwf_plan *q_dum, float Radii)
+void smooth(float ***ro_dum, float Radii)
 {
   long index, i, j, k; 
   float tempre,tempim;
@@ -723,9 +712,16 @@ void smooth(float ***ro_dum, fftwf_plan *p_dum, fftwf_plan *q_dum, float Radii)
   //----------------------------------------------------------------------
   
   //Doing Fourier Transform of the density field
- 
-  fftwf_execute(*p_dum);
+  
+  
+  fftwf_plan p_ro_dum=fftwf_plan_dft_r2c_3d(N1, N2, N3, &(ro_dum[0][0][0]), (fftwf_complex*)&(ro_dum[0][0][0]),FFTW_ESTIMATE);
+  
+  fftwf_plan q_ro_dum=fftwf_plan_dft_c2r_3d(N1, N2, N3, (fftwf_complex*)&(ro_dum[0][0][0]), &(ro_dum[0][0][0]), FFTW_ESTIMATE);
+  
+  
+  fftwf_execute(p_ro_dum);
   A=(fftwf_complex*)&(ro_dum[0][0][0]);
+  
   
   for(i=0;i<N1;i++)
     for(j=0;j<N2;j++)
@@ -740,12 +736,14 @@ void smooth(float ***ro_dum, fftwf_plan *p_dum, fftwf_plan *q_dum, float Radii)
 	  A[index][0]=tempre;
 	  A[index][1]=tempim;
 	}
-
-  fftwf_execute(*q_dum);
+  
+  fftwf_execute(q_ro_dum);
   
   for(i=0;i<N1;i++)
     for(j=0;j<N2;j++)
       for(k=0;k<=N3;k++)
   	ro_dum[i][j][k]=ro_dum[i][j][k]/(1.*N1*N2*N3);
- 
+  
+  fftwf_destroy_plan(p_ro_dum);
+  fftwf_destroy_plan(q_ro_dum); 
 }

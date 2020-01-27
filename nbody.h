@@ -32,7 +32,7 @@ void delta_fill(long*); // fills value of phases for Fourier modes
 //*************************************************************************
 
 void cic_vmass(float ***ro_dum, float **data,int xin,int yin,int zin,int min);
-void smooth(float ***ro_dum, fftwf_plan *p_dum, fftwf_plan *q_dum, float Radii);
+void smooth(float ***ro_dum,float Radii);
 //void calpow_mom(float ***ro_dum,int Nbin,double* power, double* kmode, double* power_P2,double* power_P4);
 void calpow_mom(float ***ro_dum,int Nbin,double* power, double* kmode, double* power_P2,double* power_P4, double* no);
 void calpow_mom_k(float ***ro_dum,int Nbin,float kmin,float kmax,double* power, double* kmode, double* power_P2,double* power_P4, double *no);
