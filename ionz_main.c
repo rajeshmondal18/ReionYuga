@@ -136,14 +136,6 @@ void main()
   vion=0.0;
   roion=0.0;
 
-  //calculating max and min radius for smoothing in units of grid size
-      
-  r_min=1.;
-  r_max=20.0/LL; // Mpc/LL in grid unit
-
-  //r_max=pow((1.*N1*N2*N3),(1./3.))/2.;
-      
-  
   //---------------------------------------------------------------------------//
   
   system("mkdir ionz_out");
@@ -283,6 +275,12 @@ void main()
       
       /*----------------------------------------------------------------*/
       /*----------------------------------------------------------------*/
+      //calculating max and min radius for smoothing in units of grid size
+      
+      r_min=1.;
+      r_max=20.0/LL; // Mpc/LL in grid unit
+
+      //r_max=pow((1.*N1*N2*N3),(1./3.))/2.;
       
       /*----------------------------------------------------------------*/
       /*                        smoothing                               */
