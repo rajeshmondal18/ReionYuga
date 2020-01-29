@@ -19,8 +19,8 @@ extern float  vhh, // Hubble parameter
 
 extern long N1,N2,N3;// box dimension (grid) 
 extern int NF, // Fill every NF grid point 
-  Nbin; // Number of bins to calculate final P(k) (output)
-
+  Nbin, // Number of bins to calculate final P(k) (output)
+  Nthreads; // no. of threads for the parallel computation
 extern long    MM; // Number of particles 
 extern float   LL; // grid spacing in Mpc
 
@@ -57,10 +57,11 @@ void Setting_Up_Memory_For_ionz()
 
   //-------------------for multiple  threads---------------------------//
   fftwf_init_threads();
-  printf("No of threads = %d\n",omp_get_max_threads()); 
-  fftwf_plan_with_nthreads(omp_get_max_threads());
+  //printf("No of threads = %d\n",omp_get_max_threads());
+  printf("No of threads = %d\n",Nthreads); 
+  fftwf_plan_with_nthreads(Nthreads);
   
-  omp_set_num_threads(omp_get_max_threads());
+  omp_set_num_threads(Nthreads);
   
   //---------------------done multi thread----------------------------// 
   
