@@ -16,12 +16,14 @@ You need to install FFTW-3.x.x with following flags: '--enable-float', '--enable
 _____________________________________
 
 Use the makefile for compilation in the following manner:
+
 $ make ionz_main
 
 It will create the executable 'ionz_main'
 _____________________________________
 
 To run:
+
 $ ./ionz_main
 _____________________________________
 
